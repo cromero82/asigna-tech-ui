@@ -1,5 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { mensajeHttp } from '../../../core/http/mensaje-http';
 import { Solicitud } from '../../../core/models/solicitud';
 import { SolicitudService } from '../../../core/services/solicitud';
 
@@ -23,7 +24,10 @@ export class SolicitudList implements OnInit {
     this.error.set(null);
     this.solicitudService.listar().subscribe({
       next: (lista) => this.solicitudes.set(lista),
-      error: () => this.error.set('No se pudo cargar el listado. ¿Está el API en el puerto 3000?')
+      error: (err: unknown) =>
+        this.error.set(
+          mensajeHttp(err, 'No se pudo cargar el listado. ¿Está el API en el puerto 3000?')
+        )
     });
   }
 
@@ -34,7 +38,8 @@ export class SolicitudList implements OnInit {
     }
     this.solicitudService.eliminar(solicitud.id).subscribe({
       next: () => this.cargar(),
-      error: () => this.error.set('No se pudo eliminar la solicitud.')
+      error: (err: unknown) =>
+        this.error.set(mensajeHttp(err, 'No se pudo eliminar la solicitud.'))
     });
   }
 }

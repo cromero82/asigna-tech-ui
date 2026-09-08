@@ -1,4 +1,3 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -15,6 +14,7 @@ import {
   switchMap,
   tap
 } from 'rxjs';
+import { mensajeHttp } from '../../core/http/mensaje-http';
 import { CatalogoItem, ServicioGrupo, TecnicoItem } from '../../core/models/catalogo';
 import { CatalogoService } from '../../core/services/catalogo';
 
@@ -189,7 +189,7 @@ export class DominioList {
         }
         this.recargar$.next();
       },
-      error: (err: unknown) => this.error.set(this.mensajeError(err, 'No se pudo eliminar.'))
+      error: (err: unknown) => this.error.set(mensajeHttp(err, 'No se pudo eliminar.'))
     });
   }
 
@@ -232,7 +232,8 @@ export class DominioList {
     if (nueva) {
       this.catalogoService.crearTipoTecnico(nueva).subscribe({
         next: (especialidad) => this.persistirServicio(especialidad.id),
-        error: (err: unknown) => this.error.set(this.mensajeError(err, 'No se pudo crear la especialidad.'))
+        error: (err: unknown) =>
+          this.error.set(mensajeHttp(err, 'No se pudo crear la especialidad.'))
       });
       return;
     }
@@ -258,7 +259,7 @@ export class DominioList {
         this.cerrarFormulario();
         this.recargar$.next();
       },
-      error: (err: unknown) => this.error.set(this.mensajeError(err, 'No se pudo guardar.'))
+      error: (err: unknown) => this.error.set(mensajeHttp(err, 'No se pudo guardar.'))
     });
   }
 
@@ -321,12 +322,5 @@ export class DominioList {
 
   private mapaEspecialidad(lista: CatalogoItem[]): Map<number, string> {
     return new Map(lista.map((item) => [item.id, item.nombre]));
-  }
-
-  private mensajeError(err: unknown, respaldo: string): string {
-    if (err instanceof HttpErrorResponse && typeof err.error?.message === 'string') {
-      return err.error.message;
-    }
-    return respaldo;
   }
 }

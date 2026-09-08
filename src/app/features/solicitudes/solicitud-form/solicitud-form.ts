@@ -1,7 +1,9 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
+import { mensajeHttp } from '../../../core/http/mensaje-http';
 import {
   CatalogoItem,
   EstadoPrioridadResultado,
@@ -25,6 +27,7 @@ export class SolicitudForm implements OnInit {
   private readonly router = inject(Router);
   private readonly solicitudService = inject(SolicitudService);
   private readonly catalogoService = inject(CatalogoService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly id = signal<number | null>(null);
   readonly error = signal<string | null>(null);
@@ -34,9 +37,11 @@ export class SolicitudForm implements OnInit {
   readonly estados = signal<EstadoPrioridadResultado[]>([]);
   readonly prioridades = signal<EstadoPrioridadResultado[]>([]);
   readonly resultados = signal<EstadoPrioridadResultado[]>([]);
+  readonly tecnicoId = signal<number | null>(null);
+  readonly estadoId = signal<number | null>(null);
 
   readonly form = this.formBuilder.nonNullable.group({
-    titulo: ['', Validators.required],
+    titulo: ['', [Validators.required, Validators.maxLength(160)]],
     descripcion: [''],
     observaciones: [''],
     tipoTecnicoId: [null as number | null, Validators.required],
@@ -48,6 +53,18 @@ export class SolicitudForm implements OnInit {
     resultadoId: [null as number | null]
   });
 
+  readonly estadosDisponibles = computed(() => {
+    const tieneTecnico = !!this.tecnicoId();
+    return this.estados().filter((estado) =>
+      tieneTecnico ? estado.codigo !== 'PENDIENTE' : estado.codigo === 'PENDIENTE'
+    );
+  });
+
+  readonly esCerrada = computed(() => {
+    const id = this.estadoId();
+    return this.estados().some((estado) => estado.id === id && estado.codigo === 'CERRADA');
+  });
+
   get esEdicion(): boolean {
     return this.id() !== null;
   }
@@ -55,6 +72,24 @@ export class SolicitudForm implements OnInit {
   ngOnInit(): void {
     const rawId = this.route.snapshot.paramMap.get('id');
     this.id.set(rawId ? Number(rawId) : null);
+    if (this.esEdicion) {
+      this.form.controls.estadoId.addValidators(Validators.required);
+      this.form.controls.prioridadId.addValidators(Validators.required);
+    }
+
+    this.form.controls.tecnicoId.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((id) => {
+        const tecnicoId = id || null;
+        this.tecnicoId.set(tecnicoId);
+        this.alinearEstadoConTecnico(tecnicoId);
+      });
+    this.form.controls.estadoId.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((id) => {
+        this.estadoId.set(id);
+        this.alinearResultadoConEstado(id);
+      });
 
     forkJoin({
       servicios: this.catalogoService.listarServicios(),
@@ -74,7 +109,8 @@ export class SolicitudForm implements OnInit {
           this.cargarSolicitud(id);
         }
       },
-      error: () => this.error.set('No se pudieron cargar los catálogos.')
+      error: (err: unknown) =>
+        this.error.set(mensajeHttp(err, 'No se pudieron cargar los catálogos.'))
     });
   }
 
@@ -123,13 +159,14 @@ export class SolicitudForm implements OnInit {
         })
         .subscribe({
           next: () => void this.router.navigate(['/solicitudes']),
-          error: () => this.error.set('No se pudo actualizar la solicitud.')
+          error: (err: unknown) =>
+            this.error.set(mensajeHttp(err, 'No se pudo actualizar la solicitud.'))
         });
       return;
     }
     this.solicitudService.crear(base).subscribe({
       next: () => void this.router.navigate(['/solicitudes']),
-      error: () => this.error.set('No se pudo crear la solicitud.')
+      error: (err: unknown) => this.error.set(mensajeHttp(err, 'No se pudo crear la solicitud.'))
     });
   }
 
@@ -152,9 +189,45 @@ export class SolicitudForm implements OnInit {
           },
           { emitEvent: false }
         );
+        this.tecnicoId.set(solicitud.tecnico?.id ?? null);
+        this.estadoId.set(solicitud.estado.id);
+        this.alinearResultadoConEstado(solicitud.estado.id);
       },
-      error: () => this.error.set('No se encontró la solicitud.')
+      error: (err: unknown) => this.error.set(mensajeHttp(err, 'No se encontró la solicitud.'))
     });
+  }
+
+  private alinearEstadoConTecnico(tecnicoId: number | null): void {
+    if (!this.esEdicion || this.estados().length === 0) {
+      return;
+    }
+    const pendiente = this.estados().find((estado) => estado.codigo === 'PENDIENTE');
+    const asignada = this.estados().find((estado) => estado.codigo === 'ASIGNADA');
+    const actual = this.estados().find((estado) => estado.id === this.form.controls.estadoId.value);
+    if (!tecnicoId && pendiente) {
+      this.form.controls.estadoId.setValue(pendiente.id);
+      return;
+    }
+    if (tecnicoId && actual?.codigo === 'PENDIENTE' && asignada) {
+      this.form.controls.estadoId.setValue(asignada.id);
+    }
+  }
+
+  private alinearResultadoConEstado(estadoId: number | null): void {
+    if (!this.esEdicion) {
+      return;
+    }
+    const cerrada = this.estados().some((estado) => estado.id === estadoId && estado.codigo === 'CERRADA');
+    const control = this.form.controls.resultadoId;
+    if (!cerrada) {
+      control.setValue(null, { emitEvent: false });
+      control.clearValidators();
+      control.disable({ emitEvent: false });
+    } else {
+      control.enable({ emitEvent: false });
+      control.setValidators(Validators.required);
+    }
+    control.updateValueAndValidity({ emitEvent: false });
   }
 
   private cargarTecnicos(tipoTecnicoId: number | null): void {
@@ -164,7 +237,8 @@ export class SolicitudForm implements OnInit {
     }
     this.catalogoService.listarTecnicos(tipoTecnicoId).subscribe({
       next: (tecnicos) => this.tecnicos.set(tecnicos),
-      error: () => this.error.set('No se pudieron filtrar los técnicos.')
+      error: (err: unknown) =>
+        this.error.set(mensajeHttp(err, 'No se pudieron filtrar los técnicos.'))
     });
   }
 }

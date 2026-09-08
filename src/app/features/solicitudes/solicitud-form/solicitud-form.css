@@ -42,3 +42,20 @@ textarea {
   gap: 1rem;
   align-items: center;
 }
+
+.field-error {
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: #b91c1c;
+}
+
+.hint {
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+select:disabled {
+  background: #f1f5f9;
+  color: #64748b;
+}
