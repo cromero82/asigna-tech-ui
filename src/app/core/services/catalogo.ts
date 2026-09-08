@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, shareReplay } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   CatalogoItem,
@@ -15,9 +15,13 @@ import {
 export class CatalogoService {
   private readonly http = inject(HttpClient);
   private readonly api = environment.apiUrl;
+  private tiposTecnico$?: Observable<CatalogoItem[]>;
 
   listarTiposTecnico(): Observable<CatalogoItem[]> {
-    return this.http.get<CatalogoItem[]>(`${this.api}/tipos-tecnico`);
+    this.tiposTecnico$ ??= this.http
+      .get<CatalogoItem[]>(`${this.api}/tipos-tecnico`)
+      .pipe(shareReplay({ bufferSize: 1, refCount: false }));
+    return this.tiposTecnico$;
   }
 
   listarTiposServicio(tipoTecnicoId?: number): Observable<TipoServicioItem[]> {

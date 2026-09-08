@@ -21,4 +21,15 @@ describe('App', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.brand')?.textContent).toContain('Asigna Tech');
   });
+
+  it('should render the domains menu', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Dominios');
+    expect(compiled.textContent).toContain('Especialidad');
+    expect(compiled.textContent).toContain('Tipo de servicio');
+    expect(compiled.textContent).toContain('Técnico');
+    expect(compiled.textContent).toContain('Objeto');
+  });
 });

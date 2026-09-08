@@ -24,4 +24,11 @@ describe('CatalogoService', () => {
     expect(req.request.method).toBe('GET');
     req.flush([]);
   });
+
+  it('reutiliza tipos-tecnico sin un segundo GET', () => {
+    service.listarTiposTecnico().subscribe();
+    service.listarTiposTecnico().subscribe();
+    const req = http.expectOne(`${environment.apiUrl}/tipos-tecnico`);
+    req.flush([]);
+  });
 });

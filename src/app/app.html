@@ -3,6 +3,24 @@
   <nav>
     <a routerLink="/solicitudes" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Solicitudes</a>
     <a routerLink="/solicitudes/nueva" routerLinkActive="active">Nueva</a>
+    <div class="dropdown" [class.open]="dominiosAbierto()" (click)="$event.stopPropagation()">
+      <button
+        type="button"
+        class="dropdown-toggle"
+        [class.active]="dominiosActivo()"
+        [attr.aria-expanded]="dominiosAbierto()"
+        aria-haspopup="true"
+        (click)="alternarDominios($event)"
+      >
+        Dominios
+      </button>
+      <div class="dropdown-menu" role="menu">
+        <a routerLink="/dominios/especialidades" routerLinkActive="active" role="menuitem">Especialidad</a>
+        <a routerLink="/dominios/tipos-servicio" routerLinkActive="active" role="menuitem">Tipo de servicio</a>
+        <a routerLink="/dominios/tecnicos" routerLinkActive="active" role="menuitem">Técnico</a>
+        <a routerLink="/dominios/objetos" routerLinkActive="active" role="menuitem">Objeto</a>
+      </div>
+    </div>
   </nav>
 </header>
 <main>
