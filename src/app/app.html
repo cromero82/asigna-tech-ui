@@ -1,0 +1,10 @@
+<header class="topbar">
+  <a class="brand" routerLink="/solicitudes">Asigna Tech</a>
+  <nav>
+    <a routerLink="/solicitudes" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Solicitudes</a>
+    <a routerLink="/solicitudes/nueva" routerLinkActive="active">Nueva</a>
+  </nav>
+</header>
+<main>
+  <router-outlet />
+</main>

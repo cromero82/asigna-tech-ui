@@ -1,0 +1,100 @@
+<section class="page">
+  <div class="page-head">
+    <h1>{{ esEdicion ? 'Editar solicitud' : 'Nueva solicitud' }}</h1>
+    <a routerLink="/solicitudes">Volver al listado</a>
+  </div>
+
+  @if (error()) {
+    <p class="alert" role="alert">{{ error() }}</p>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="guardar()">
+    <label>
+      Título
+      <input formControlName="titulo" required />
+    </label>
+
+    <label>
+      Tipo de servicio requerido
+      <select formControlName="tipoTecnicoId">
+        <option [ngValue]="null">Seleccione especialidad</option>
+        @for (item of tiposTecnico(); track item.id) {
+          <option [ngValue]="item.id">{{ item.nombre }}</option>
+        }
+      </select>
+    </label>
+
+    <label>
+      Tipo de servicio
+      <select formControlName="tipoServicioId">
+        <option [ngValue]="null">Seleccione el trabajo</option>
+        @for (item of tiposServicio(); track item.id) {
+          <option [ngValue]="item.id">{{ item.nombre }}</option>
+        }
+      </select>
+    </label>
+
+    <label>
+      Técnico
+      <select formControlName="tecnicoId">
+        <option [ngValue]="null">Sin asignar</option>
+        @for (item of tecnicos(); track item.id) {
+          <option [ngValue]="item.id">{{ item.nombre }}</option>
+        }
+      </select>
+    </label>
+
+    <label>
+      Objeto
+      <select formControlName="objetoId">
+        <option [ngValue]="null">Seleccione objeto</option>
+        @for (item of objetos(); track item.id) {
+          <option [ngValue]="item.id">{{ item.nombre }}</option>
+        }
+      </select>
+    </label>
+
+    <label>
+      Descripción
+      <textarea formControlName="descripcion" rows="3"></textarea>
+    </label>
+
+    <label>
+      Observaciones
+      <textarea formControlName="observaciones" rows="2"></textarea>
+    </label>
+
+    @if (esEdicion) {
+      <label>
+        Estado
+        <select formControlName="estadoId">
+          @for (item of estados(); track item.id) {
+            <option [ngValue]="item.id">{{ item.nombre }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        Prioridad
+        <select formControlName="prioridadId">
+          @for (item of prioridades(); track item.id) {
+            <option [ngValue]="item.id">{{ item.nombre }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        Resultado
+        <select formControlName="resultadoId">
+          <option [ngValue]="null">Sin resultado</option>
+          @for (item of resultados(); track item.id) {
+            <option [ngValue]="item.id">{{ item.nombre }}</option>
+          }
+        </select>
+      </label>
+    }
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Guardar</button>
+      <a routerLink="/solicitudes">Cancelar</a>
+    </div>
+  </form>
+</section>
