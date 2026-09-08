@@ -35,6 +35,24 @@ a {
   background: #1d4ed8;
 }
 
+.btn-danger {
+  background: #b91c1c;
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background: #991b1b;
+}
+
+.btn-link {
+  background: none;
+  border: 0;
+  color: #2563eb;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+}
+
 .alert {
   background: #fef2f2;
   color: #991b1b;

@@ -1,0 +1,10 @@
+<app-modal-shell (cerrar)="cancelado.emit()">
+  <h2>{{ titulo() }}</h2>
+  <p>{{ mensaje() }}</p>
+  <div class="form-actions">
+    <button type="button" class="btn btn-danger" (click)="confirmado.emit()">
+      {{ confirmarLabel() }}
+    </button>
+    <button type="button" class="btn-link" (click)="cancelado.emit()">Cancelar</button>
+  </div>
+</app-modal-shell>

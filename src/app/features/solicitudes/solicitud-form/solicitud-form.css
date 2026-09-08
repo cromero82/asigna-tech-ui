@@ -59,3 +59,13 @@ select:disabled {
   background: #f1f5f9;
   color: #64748b;
 }
+
+.en-modal {
+  margin: 0;
+}
+
+.en-modal form {
+  max-width: none;
+  padding: 0;
+  box-shadow: none;
+}

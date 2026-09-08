@@ -9,40 +9,42 @@
   }
 
   @if (formularioVisible()) {
-    <form [formGroup]="form" (ngSubmit)="guardar()">
-      <h2>{{ esEdicion ? 'Editar' : 'Nuevo' }} {{ titulo().toLowerCase() }}</h2>
-      <label>
-        Nombre
-        <input formControlName="nombre" required />
-      </label>
-      @if (muestraCorreo) {
+    <app-modal-shell (cerrar)="cerrarFormulario()">
+      <form [formGroup]="form" (ngSubmit)="guardar()">
+        <h2>{{ esEdicion ? 'Editar' : 'Nuevo' }} {{ titulo().toLowerCase() }}</h2>
         <label>
-          Correo
-          <input formControlName="correo" type="email" />
+          Nombre
+          <input formControlName="nombre" required />
         </label>
-      }
-      @if (muestraEspecialidad) {
-        <label>
-          Especialidad
-          <select formControlName="tipoTecnicoId">
-            <option [ngValue]="null">Seleccione especialidad</option>
-            @for (item of especialidades(); track item.id) {
-              <option [ngValue]="item.id">{{ item.nombre }}</option>
-            }
-          </select>
-        </label>
-      }
-      @if (muestraNuevaEspecialidad) {
-        <label>
-          O crear especialidad
-          <input formControlName="nuevaEspecialidad" placeholder="Nombre de la nueva especialidad" />
-        </label>
-      }
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Guardar</button>
-        <button type="button" class="btn-link" (click)="cerrarFormulario()">Cancelar</button>
-      </div>
-    </form>
+        @if (muestraCorreo) {
+          <label>
+            Correo
+            <input formControlName="correo" type="email" />
+          </label>
+        }
+        @if (muestraEspecialidad) {
+          <label>
+            Especialidad
+            <select formControlName="tipoTecnicoId">
+              <option [ngValue]="null">Seleccione especialidad</option>
+              @for (item of especialidades(); track item.id) {
+                <option [ngValue]="item.id">{{ item.nombre }}</option>
+              }
+            </select>
+          </label>
+        }
+        @if (muestraNuevaEspecialidad) {
+          <label>
+            O crear especialidad
+            <input formControlName="nuevaEspecialidad" placeholder="Nombre de la nueva especialidad" />
+          </label>
+        }
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Guardar</button>
+          <button type="button" class="btn-link" (click)="cerrarFormulario()">Cancelar</button>
+        </div>
+      </form>
+    </app-modal-shell>
   }
 
   @if (filas().length === 0 && !error()) {
@@ -73,7 +75,7 @@
             }
             <td class="actions">
               <button type="button" class="link" (click)="abrirEditar(fila)">Editar</button>
-              <button type="button" class="link-danger" (click)="eliminar(fila)">Eliminar</button>
+              <button type="button" class="link-danger" (click)="pedirEliminar(fila)">Eliminar</button>
             </td>
           </tr>
         }
@@ -81,3 +83,12 @@
     </table>
   }
 </section>
+
+@if (pendienteEliminar(); as fila) {
+  <app-confirm-dialog
+    titulo="Eliminar registro"
+    [mensaje]="mensajeEliminar(fila)"
+    (confirmado)="confirmarEliminar()"
+    (cancelado)="pendienteEliminar.set(null)"
+  />
+}

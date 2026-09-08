@@ -1,0 +1,16 @@
+h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.15rem;
+}
+
+p {
+  margin: 0 0 1.25rem;
+  color: #334155;
+  line-height: 1.45;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}

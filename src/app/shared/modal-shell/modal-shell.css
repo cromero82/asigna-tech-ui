@@ -1,0 +1,35 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: start center;
+  padding: 4rem 1rem 2rem;
+  overflow: auto;
+  background: rgb(15 23 42 / 45%);
+}
+
+.modal-panel {
+  position: relative;
+  width: min(42rem, 100%);
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.5rem 1.5rem 1.25rem;
+  box-shadow: 0 16px 40px rgb(15 23 42 / 22%);
+}
+
+.modal-close {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.75rem;
+  border: 0;
+  background: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.modal-close:hover {
+  color: #0f172a;
+}

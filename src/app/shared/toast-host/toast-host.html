@@ -1,0 +1,7 @@
+<div class="toasts" aria-live="polite">
+  @for (item of toasts.lista(); track item.id) {
+    <div class="toast" role="status" [class.toast-exito]="item.tipo === 'exito'" [class.toast-error]="item.tipo === 'error'">
+      {{ item.mensaje }}
+    </div>
+  }
+</div>

@@ -42,3 +42,34 @@ th {
 .empty {
   color: #64748b;
 }
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: end;
+  margin-bottom: 1.25rem;
+}
+
+.filtros label {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: 600;
+  color: #334155;
+  font-size: 0.9rem;
+}
+
+.filtros input,
+.filtros select {
+  font: inherit;
+  font-weight: 400;
+  min-width: 12rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.limpiar {
+  margin-bottom: 0.45rem;
+}

@@ -1,13 +1,18 @@
 import { Routes } from '@angular/router';
 import { DominioList } from './features/dominios/dominio-list';
-import { SolicitudForm } from './features/solicitudes/solicitud-form/solicitud-form';
 import { SolicitudList } from './features/solicitudes/solicitud-list/solicitud-list';
+import { RutaVacia } from './shared/ruta-vacia';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'solicitudes' },
-  { path: 'solicitudes', component: SolicitudList },
-  { path: 'solicitudes/nueva', component: SolicitudForm },
-  { path: 'solicitudes/:id/editar', component: SolicitudForm },
+  {
+    path: 'solicitudes',
+    component: SolicitudList,
+    children: [
+      { path: 'nueva', component: RutaVacia },
+      { path: ':id/editar', component: RutaVacia }
+    ]
+  },
   { path: 'dominios/especialidades', redirectTo: '/dominios/servicios', pathMatch: 'full' },
   { path: 'dominios/tipos-servicio', redirectTo: '/dominios/servicios', pathMatch: 'full' },
   {

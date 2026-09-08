@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, input, OnInit, output, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -13,6 +13,7 @@ import {
 } from '../../../core/models/catalogo';
 import { CatalogoService } from '../../../core/services/catalogo';
 import { SolicitudService } from '../../../core/services/solicitud';
+import { ToastService } from '../../../core/ui/toast';
 import { ServicioSelect } from '../../../shared/servicio-select/servicio-select';
 
 @Component({
@@ -27,7 +28,12 @@ export class SolicitudForm implements OnInit {
   private readonly router = inject(Router);
   private readonly solicitudService = inject(SolicitudService);
   private readonly catalogoService = inject(CatalogoService);
+  private readonly toasts = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
+
+  readonly modoModal = input(false);
+  readonly solicitudId = input<number | null>(null);
+  readonly cerrado = output<{ guardado: boolean }>();
 
   readonly id = signal<number | null>(null);
   readonly error = signal<string | null>(null);
@@ -71,7 +77,8 @@ export class SolicitudForm implements OnInit {
 
   ngOnInit(): void {
     const rawId = this.route.snapshot.paramMap.get('id');
-    this.id.set(rawId ? Number(rawId) : null);
+    const id = this.modoModal() ? this.solicitudId() : rawId ? Number(rawId) : this.solicitudId();
+    this.id.set(id ?? null);
     if (this.esEdicion) {
       this.form.controls.estadoId.addValidators(Validators.required);
       this.form.controls.prioridadId.addValidators(Validators.required);
@@ -158,16 +165,33 @@ export class SolicitudForm implements OnInit {
           resultadoId: v.resultadoId ? Number(v.resultadoId) : null
         })
         .subscribe({
-          next: () => void this.router.navigate(['/solicitudes']),
+          next: () => this.trasGuardar('Solicitud actualizada.'),
           error: (err: unknown) =>
             this.error.set(mensajeHttp(err, 'No se pudo actualizar la solicitud.'))
         });
       return;
     }
     this.solicitudService.crear(base).subscribe({
-      next: () => void this.router.navigate(['/solicitudes']),
+      next: () => this.trasGuardar('Solicitud creada.'),
       error: (err: unknown) => this.error.set(mensajeHttp(err, 'No se pudo crear la solicitud.'))
     });
+  }
+
+  cancelar(): void {
+    this.cerrar(false);
+  }
+
+  private trasGuardar(mensaje: string): void {
+    this.toasts.exito(mensaje);
+    this.cerrar(true);
+  }
+
+  private cerrar(guardado: boolean): void {
+    if (this.modoModal()) {
+      this.cerrado.emit({ guardado });
+      return;
+    }
+    void this.router.navigate(['/solicitudes']);
   }
 
   private cargarSolicitud(id: number): void {

@@ -17,6 +17,9 @@ import {
 import { mensajeHttp } from '../../core/http/mensaje-http';
 import { CatalogoItem, ServicioGrupo, TecnicoItem } from '../../core/models/catalogo';
 import { CatalogoService } from '../../core/services/catalogo';
+import { ToastService } from '../../core/ui/toast';
+import { ConfirmDialog } from '../../shared/confirm-dialog/confirm-dialog';
+import { ModalShell } from '../../shared/modal-shell/modal-shell';
 
 export type DominioClave = 'servicio' | 'tecnico' | 'objeto';
 
@@ -36,13 +39,14 @@ interface ResultadoDominio {
 
 @Component({
   selector: 'app-dominio-list',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, ConfirmDialog, ModalShell],
   templateUrl: './dominio-list.html',
   styleUrl: './dominio-list.css'
 })
 export class DominioList {
   private readonly route = inject(ActivatedRoute);
   private readonly catalogoService = inject(CatalogoService);
+  private readonly toasts = inject(ToastService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly recargar$ = new Subject<void>();
 
@@ -54,6 +58,7 @@ export class DominioList {
   readonly error = signal<string | null>(null);
   readonly edicionId = signal<number | null>(null);
   readonly formularioVisible = signal(false);
+  readonly pendienteEliminar = signal<FilaDominio | null>(null);
 
   readonly form = this.formBuilder.nonNullable.group({
     nombre: ['', Validators.required],
@@ -169,9 +174,17 @@ export class DominioList {
     this.guardarServicio();
   }
 
-  eliminar(fila: FilaDominio): void {
-    const ok = window.confirm(`¿Eliminar "${fila.nombre}"?`);
-    if (!ok) {
+  pedirEliminar(fila: FilaDominio): void {
+    this.pendienteEliminar.set(fila);
+  }
+
+  mensajeEliminar(fila: FilaDominio): string {
+    return `¿Eliminar "${fila.nombre}"?`;
+  }
+
+  confirmarEliminar(): void {
+    const fila = this.pendienteEliminar();
+    if (!fila) {
       return;
     }
     this.error.set(null);
@@ -184,6 +197,8 @@ export class DominioList {
           : this.catalogoService.eliminarTipoServicio(id);
     pedido.subscribe({
       next: () => {
+        this.pendienteEliminar.set(null);
+        this.toasts.exito('Registro eliminado.');
         if (this.edicionId() === id) {
           this.cerrarFormulario();
         }
@@ -256,6 +271,7 @@ export class DominioList {
     this.error.set(null);
     pedido.subscribe({
       next: () => {
+        this.toasts.exito(this.edicionId() ? 'Registro actualizado.' : 'Registro creado.');
         this.cerrarFormulario();
         this.recargar$.next();
       },

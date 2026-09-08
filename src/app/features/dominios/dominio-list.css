@@ -13,12 +13,10 @@
 form {
   display: grid;
   gap: 0.85rem;
-  max-width: 40rem;
   background: #fff;
-  padding: 1.25rem;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgb(15 23 42 / 8%);
-  margin-bottom: 1.25rem;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
 }
 
 form h2 {

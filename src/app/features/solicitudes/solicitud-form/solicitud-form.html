@@ -1,7 +1,9 @@
-<section class="page">
+<section class="page" [class.en-modal]="modoModal()">
   <div class="page-head">
     <h1>{{ esEdicion ? 'Editar solicitud' : 'Nueva solicitud' }}</h1>
-    <a routerLink="/solicitudes">Volver al listado</a>
+    @if (!modoModal()) {
+      <a routerLink="/solicitudes">Volver al listado</a>
+    }
   </div>
 
   @if (error()) {
@@ -99,7 +101,11 @@
 
     <div class="form-actions">
       <button type="submit" class="btn btn-primary">Guardar</button>
-      <a routerLink="/solicitudes">Cancelar</a>
+      @if (modoModal()) {
+        <button type="button" class="btn-link" (click)="cancelar()">Cancelar</button>
+      } @else {
+        <a routerLink="/solicitudes">Cancelar</a>
+      }
     </div>
   </form>
 </section>
