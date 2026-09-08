@@ -1,0 +1,47 @@
+<div class="combobox" [class.open]="abierto()">
+  <input
+    type="text"
+    role="combobox"
+    autocomplete="off"
+    aria-label="Servicio"
+    aria-autocomplete="list"
+    [attr.aria-expanded]="abierto()"
+    aria-controls="servicio-listbox"
+    [value]="texto()"
+    placeholder="Buscar especialidad o tipo de servicio"
+    (focus)="abrir()"
+    (click)="abrir()"
+    (input)="onInput($event)"
+    (keydown)="onKeydown($event)"
+  />
+
+  @if (abierto()) {
+    <ul id="servicio-listbox" class="listbox" role="listbox">
+      @for (grupo of gruposFiltrados(); track grupo.id) {
+        <li class="group" role="presentation">
+          <div class="group-label">{{ grupo.nombre }}</div>
+          @for (tipo of grupo.tiposServicio; track tipo.id) {
+            <button
+              type="button"
+              role="option"
+              class="option"
+              [class.active]="esActiva(tipo.id)"
+              [attr.aria-selected]="tipoServicioId() === tipo.id"
+              (mousedown)="$event.preventDefault()"
+              (click)="elegir({
+                tipoTecnicoId: grupo.id,
+                tipoServicioId: tipo.id,
+                especialidadNombre: grupo.nombre,
+                tipoServicioNombre: tipo.nombre
+              })"
+            >
+              {{ tipo.nombre }}
+            </button>
+          }
+        </li>
+      } @empty {
+        <li class="empty" role="presentation">Sin coincidencias</li>
+      }
+    </ul>
+  }
+</div>

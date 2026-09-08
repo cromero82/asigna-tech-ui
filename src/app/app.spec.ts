@@ -27,8 +27,9 @@ describe('App', () => {
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('Dominios');
-    expect(compiled.textContent).toContain('Especialidad');
-    expect(compiled.textContent).toContain('Tipo de servicio');
+    expect(compiled.textContent).toContain('Servicio');
+    expect(compiled.textContent).not.toContain('Especialidad');
+    expect(compiled.textContent).not.toContain('Tipo de servicio');
     expect(compiled.textContent).toContain('Técnico');
     expect(compiled.textContent).toContain('Objeto');
   });

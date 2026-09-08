@@ -31,4 +31,11 @@ describe('CatalogoService', () => {
     const req = http.expectOne(`${environment.apiUrl}/tipos-tecnico`);
     req.flush([]);
   });
+
+  it('carga especialidades agrupadas con tipos de servicio', () => {
+    service.listarServicios().subscribe((lista) => expect(lista.length).toBe(0));
+    const req = http.expectOne(`${environment.apiUrl}/servicios`);
+    expect(req.request.method).toBe('GET');
+    req.flush([]);
+  });
 });

@@ -8,7 +8,8 @@ import { DominioList } from './dominio-list';
 describe('DominioList', () => {
   let fixture: ComponentFixture<DominioList>;
   const catalogo = {
-    listarTiposTecnico: vi.fn(() => of([{ id: 1, nombre: 'Técnico en Impresoras' }])),
+    listarServicios: vi.fn(() => of([])),
+    listarTiposTecnico: vi.fn(() => of([{ id: 1, nombre: 'Impresoras' }])),
     listarTiposServicio: vi.fn(() => of([])),
     listarTecnicos: vi.fn(() => of([])),
     listarObjetos: vi.fn(() => of([]))
@@ -41,6 +42,6 @@ describe('DominioList', () => {
     expect(catalogo.listarTecnicos).toHaveBeenCalledTimes(1);
     expect(catalogo.listarTiposTecnico).toHaveBeenCalledTimes(1);
     expect(catalogo.listarObjetos).not.toHaveBeenCalled();
-    expect(catalogo.listarTiposServicio).not.toHaveBeenCalled();
+    expect(catalogo.listarServicios).not.toHaveBeenCalled();
   });
 });

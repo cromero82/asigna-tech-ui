@@ -24,6 +24,7 @@ describe('SolicitudForm', () => {
         {
           provide: CatalogoService,
           useValue: {
+            listarServicios: () => of([]),
             listarTiposTecnico: () => of([]),
             listarTiposServicio: () => of([]),
             listarTecnicos: () => of([]),

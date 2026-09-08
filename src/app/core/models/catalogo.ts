@@ -21,3 +21,16 @@ export interface TecnicoItem {
   correo: string | null;
   tipoTecnicoId: number;
 }
+
+export interface ServicioGrupo {
+  id: number;
+  nombre: string;
+  tiposServicio: TipoServicioItem[];
+}
+
+export interface ServicioSeleccionado {
+  tipoTecnicoId: number;
+  tipoServicioId: number;
+  especialidadNombre: string;
+  tipoServicioNombre: string;
+}

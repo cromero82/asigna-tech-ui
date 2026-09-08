@@ -14,25 +14,14 @@
       <input formControlName="titulo" required />
     </label>
 
-    <label>
-      Tipo de servicio requerido
-      <select formControlName="tipoTecnicoId">
-        <option [ngValue]="null">Seleccione especialidad</option>
-        @for (item of tiposTecnico(); track item.id) {
-          <option [ngValue]="item.id">{{ item.nombre }}</option>
-        }
-      </select>
-    </label>
-
-    <label>
-      Tipo de servicio
-      <select formControlName="tipoServicioId">
-        <option [ngValue]="null">Seleccione el trabajo</option>
-        @for (item of tiposServicio(); track item.id) {
-          <option [ngValue]="item.id">{{ item.nombre }}</option>
-        }
-      </select>
-    </label>
+    <div class="field">
+      <span>Servicio</span>
+      <app-servicio-select
+        [grupos]="servicios()"
+        [tipoServicioId]="form.controls.tipoServicioId.value"
+        (seleccion)="onServicioSeleccionado($event)"
+      />
+    </div>
 
     <label>
       Técnico
@@ -47,7 +36,7 @@
     <label>
       Objeto
       <select formControlName="objetoId">
-        <option [ngValue]="null">Seleccione objeto</option>
+        <option [ngValue]="null">Sin objeto</option>
         @for (item of objetos(); track item.id) {
           <option [ngValue]="item.id">{{ item.nombre }}</option>
         }

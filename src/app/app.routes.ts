@@ -8,15 +8,12 @@ export const routes: Routes = [
   { path: 'solicitudes', component: SolicitudList },
   { path: 'solicitudes/nueva', component: SolicitudForm },
   { path: 'solicitudes/:id/editar', component: SolicitudForm },
+  { path: 'dominios/especialidades', redirectTo: '/dominios/servicios', pathMatch: 'full' },
+  { path: 'dominios/tipos-servicio', redirectTo: '/dominios/servicios', pathMatch: 'full' },
   {
-    path: 'dominios/especialidades',
+    path: 'dominios/servicios',
     component: DominioList,
-    data: { dominio: 'especialidad', titulo: 'Especialidad' }
-  },
-  {
-    path: 'dominios/tipos-servicio',
-    component: DominioList,
-    data: { dominio: 'tipo-servicio', titulo: 'Tipo de servicio' }
+    data: { dominio: 'servicio', titulo: 'Servicio' }
   },
   {
     path: 'dominios/tecnicos',

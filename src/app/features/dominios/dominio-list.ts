@@ -2,10 +2,10 @@ import { Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { catchError, distinctUntilChanged, forkJoin, map, Observable, of, switchMap } from 'rxjs';
-import { CatalogoItem, TecnicoItem, TipoServicioItem } from '../../core/models/catalogo';
+import { CatalogoItem, ServicioGrupo, TecnicoItem } from '../../core/models/catalogo';
 import { CatalogoService } from '../../core/services/catalogo';
 
-export type DominioClave = 'especialidad' | 'tipo-servicio' | 'tecnico' | 'objeto';
+export type DominioClave = 'servicio' | 'tecnico' | 'objeto';
 
 interface FilaDominio {
   id: number;
@@ -61,11 +61,11 @@ export class DominioList {
   }
 
   private cargar$(clave: DominioClave): Observable<ResultadoDominio> {
-    if (clave === 'especialidad') {
-      return this.catalogoService.listarTiposTecnico().pipe(
-        map((lista) => ({
-          columnaExtra: null,
-          filas: lista.map((item) => ({ id: item.id, nombre: item.nombre }))
+    if (clave === 'servicio') {
+      return this.catalogoService.listarServicios().pipe(
+        map((grupos) => ({
+          columnaExtra: 'Especialidad',
+          filas: this.filasServicio(grupos)
         }))
       );
     }
@@ -75,18 +75,6 @@ export class DominioList {
         map((lista) => ({
           columnaExtra: null,
           filas: lista.map((item) => ({ id: item.id, nombre: item.nombre }))
-        }))
-      );
-    }
-
-    if (clave === 'tipo-servicio') {
-      return forkJoin({
-        especialidades: this.catalogoService.listarTiposTecnico(),
-        tiposServicio: this.catalogoService.listarTiposServicio()
-      }).pipe(
-        map(({ especialidades, tiposServicio }) => ({
-          columnaExtra: 'Especialidad',
-          filas: tiposServicio.map((item) => this.filaServicio(item, this.mapaEspecialidad(especialidades)))
         }))
       );
     }
@@ -106,12 +94,14 @@ export class DominioList {
     return new Map(lista.map((item) => [item.id, item.nombre]));
   }
 
-  private filaServicio(item: TipoServicioItem, nombres: Map<number, string>): FilaDominio {
-    return {
-      id: item.id,
-      nombre: item.nombre,
-      extra: nombres.get(item.tipoTecnicoId) ?? ''
-    };
+  private filasServicio(grupos: ServicioGrupo[]): FilaDominio[] {
+    return grupos.flatMap((grupo) =>
+      grupo.tiposServicio.map((tipo) => ({
+        id: tipo.id,
+        nombre: tipo.nombre,
+        extra: grupo.nombre
+      }))
+    );
   }
 
   private filaTecnico(item: TecnicoItem, nombres: Map<number, string>): FilaDominio {

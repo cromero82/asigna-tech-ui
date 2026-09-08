@@ -12,7 +12,7 @@ export interface Solicitud {
   tipoTecnico: CatalogoRef;
   tipoServicio: CatalogoRef;
   tecnico: CatalogoRef | null;
-  objeto: CatalogoRef;
+  objeto: CatalogoRef | null;
   estado: CatalogoRef;
   prioridad: CatalogoRef;
   resultado: CatalogoRef | null;
@@ -27,7 +27,7 @@ export interface CrearSolicitud {
   tipoTecnicoId: number;
   tipoServicioId: number;
   tecnicoId?: number | null;
-  objetoId: number;
+  objetoId?: number | null;
 }
 
 export interface ActualizarSolicitud extends CrearSolicitud {

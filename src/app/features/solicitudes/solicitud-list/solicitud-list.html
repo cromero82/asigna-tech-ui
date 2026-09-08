@@ -30,7 +30,7 @@
             <td>{{ item.tipoTecnico.nombre }}</td>
             <td>{{ item.tipoServicio.nombre }}</td>
             <td>{{ item.tecnico?.nombre ?? 'Sin asignar' }}</td>
-            <td>{{ item.objeto.nombre }}</td>
+            <td>{{ item.objeto?.nombre ?? 'Sin objeto' }}</td>
             <td>{{ item.estado.nombre }}</td>
             <td class="actions">
               <a [routerLink]="['/solicitudes', item.id, 'editar']">Editar</a>

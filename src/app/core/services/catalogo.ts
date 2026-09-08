@@ -5,6 +5,7 @@ import { environment } from '../../../environments/environment';
 import {
   CatalogoItem,
   EstadoPrioridadResultado,
+  ServicioGrupo,
   TecnicoItem,
   TipoServicioItem
 } from '../models/catalogo';
@@ -16,12 +17,20 @@ export class CatalogoService {
   private readonly http = inject(HttpClient);
   private readonly api = environment.apiUrl;
   private tiposTecnico$?: Observable<CatalogoItem[]>;
+  private servicios$?: Observable<ServicioGrupo[]>;
 
   listarTiposTecnico(): Observable<CatalogoItem[]> {
     this.tiposTecnico$ ??= this.http
       .get<CatalogoItem[]>(`${this.api}/tipos-tecnico`)
       .pipe(shareReplay({ bufferSize: 1, refCount: false }));
     return this.tiposTecnico$;
+  }
+
+  listarServicios(): Observable<ServicioGrupo[]> {
+    this.servicios$ ??= this.http
+      .get<ServicioGrupo[]>(`${this.api}/servicios`)
+      .pipe(shareReplay({ bufferSize: 1, refCount: false }));
+    return this.servicios$;
   }
 
   listarTiposServicio(tipoTecnicoId?: number): Observable<TipoServicioItem[]> {
