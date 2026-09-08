@@ -24,8 +24,10 @@ npm start        # ng serve → http://localhost:4200
 
 Flujo: listado → Nueva solicitud → elegir **Tipo de servicio requerido** (filtra técnicos y tipos de servicio) → Guardar.
 
-## Tests unitarios
+## Tests
 
 ```bash
 npm test
 ```
+
+La URL del API está en `src/environments/environment.ts` (equivalente Angular a propiedades de entorno; los secretos viven en el `.env` del backend).
