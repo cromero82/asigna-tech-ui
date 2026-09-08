@@ -12,7 +12,18 @@ describe('DominioList', () => {
     listarTiposTecnico: vi.fn(() => of([{ id: 1, nombre: 'Impresoras' }])),
     listarTiposServicio: vi.fn(() => of([])),
     listarTecnicos: vi.fn(() => of([])),
-    listarObjetos: vi.fn(() => of([]))
+    listarObjetos: vi.fn(() => of([])),
+    crearTipoTecnico: vi.fn(() => of({ id: 2, nombre: 'Nueva' })),
+    crearTipoServicio: vi.fn(() => of({})),
+    actualizarTipoServicio: vi.fn(() => of({})),
+    eliminarTipoServicio: vi.fn(() => of(undefined)),
+    crearTecnico: vi.fn(() => of({})),
+    actualizarTecnico: vi.fn(() => of({})),
+    eliminarTecnico: vi.fn(() => of(undefined)),
+    crearObjeto: vi.fn(() => of({})),
+    actualizarObjeto: vi.fn(() => of({})),
+    eliminarObjeto: vi.fn(() => of(undefined)),
+    invalidarCache: vi.fn()
   };
 
   beforeEach(async () => {

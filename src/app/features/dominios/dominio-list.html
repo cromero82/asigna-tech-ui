@@ -1,10 +1,48 @@
 <section class="page">
   <div class="page-head">
     <h1>{{ titulo() }}</h1>
+    <button type="button" class="btn btn-primary" (click)="abrirCrear()">Nuevo</button>
   </div>
 
   @if (error()) {
     <p class="alert" role="alert">{{ error() }}</p>
+  }
+
+  @if (formularioVisible()) {
+    <form [formGroup]="form" (ngSubmit)="guardar()">
+      <h2>{{ esEdicion ? 'Editar' : 'Nuevo' }} {{ titulo().toLowerCase() }}</h2>
+      <label>
+        Nombre
+        <input formControlName="nombre" required />
+      </label>
+      @if (muestraCorreo) {
+        <label>
+          Correo
+          <input formControlName="correo" type="email" />
+        </label>
+      }
+      @if (muestraEspecialidad) {
+        <label>
+          Especialidad
+          <select formControlName="tipoTecnicoId">
+            <option [ngValue]="null">Seleccione especialidad</option>
+            @for (item of especialidades(); track item.id) {
+              <option [ngValue]="item.id">{{ item.nombre }}</option>
+            }
+          </select>
+        </label>
+      }
+      @if (muestraNuevaEspecialidad) {
+        <label>
+          O crear especialidad
+          <input formControlName="nuevaEspecialidad" placeholder="Nombre de la nueva especialidad" />
+        </label>
+      }
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <button type="button" class="btn-link" (click)="cerrarFormulario()">Cancelar</button>
+      </div>
+    </form>
   }
 
   @if (filas().length === 0 && !error()) {
@@ -14,18 +52,29 @@
       <thead>
         <tr>
           <th>Nombre</th>
+          @if (muestraCorreo) {
+            <th>Correo</th>
+          }
           @if (columnaExtra()) {
             <th>{{ columnaExtra() }}</th>
           }
+          <th></th>
         </tr>
       </thead>
       <tbody>
         @for (fila of filas(); track fila.id) {
           <tr>
             <td>{{ fila.nombre }}</td>
+            @if (muestraCorreo) {
+              <td>{{ fila.correo || '—' }}</td>
+            }
             @if (columnaExtra()) {
               <td>{{ fila.extra }}</td>
             }
+            <td class="actions">
+              <button type="button" class="link" (click)="abrirEditar(fila)">Editar</button>
+              <button type="button" class="link-danger" (click)="eliminar(fila)">Eliminar</button>
+            </td>
           </tr>
         }
       </tbody>

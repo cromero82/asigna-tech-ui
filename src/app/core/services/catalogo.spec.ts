@@ -38,4 +38,15 @@ describe('CatalogoService', () => {
     expect(req.request.method).toBe('GET');
     req.flush([]);
   });
+
+  it('invalida el cache de tipos-tecnico al crear un objeto', () => {
+    service.listarTiposTecnico().subscribe();
+    http.expectOne(`${environment.apiUrl}/tipos-tecnico`).flush([]);
+    service.crearObjeto('Monitor').subscribe();
+    const crear = http.expectOne(`${environment.apiUrl}/objetos`);
+    expect(crear.request.method).toBe('POST');
+    crear.flush({ id: 9, nombre: 'Monitor' });
+    service.listarTiposTecnico().subscribe();
+    http.expectOne(`${environment.apiUrl}/tipos-tecnico`).flush([]);
+  });
 });
