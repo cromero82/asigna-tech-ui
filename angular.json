@@ -2,7 +2,8 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "analytics": false
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -63,7 +64,18 @@
           "defaultConfiguration": "development"
         },
         "test": {
-          "builder": "@angular/build:unit-test"
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "coverageInclude": ["src/app/**/*.ts"],
+            "coverageExclude": ["**/*.spec.ts"],
+            "coverageReporters": ["text", "text-summary", "lcov", "html"],
+            "coverageThresholds": {
+              "statements": 75,
+              "branches": 75,
+              "functions": 75,
+              "lines": 75
+            }
+          }
         }
       }
     }

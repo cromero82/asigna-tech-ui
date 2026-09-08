@@ -1,12 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { App } from './app';
+import { RutaVacia } from './shared/ruta-vacia';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideRouter([])]
+      providers: [provideRouter([{ path: 'dominios/objetos', component: RutaVacia }])]
     }).compileComponents();
   });
 
@@ -32,5 +33,22 @@ describe('App', () => {
     expect(compiled.textContent).not.toContain('Tipo de servicio');
     expect(compiled.textContent).toContain('Técnico');
     expect(compiled.textContent).toContain('Objeto');
+  });
+
+  it('abre y cierra el menú de dominios', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const cmp = fixture.componentInstance;
+    const event = { stopPropagation: () => undefined } as Event;
+    cmp.alternarDominios(event);
+    expect(cmp.dominiosAbierto()).toBe(true);
+    cmp.alternarDominios(event);
+    expect(cmp.dominiosAbierto()).toBe(false);
+    cmp.alternarDominios(event);
+    cmp.cerrarDominios();
+    expect(cmp.dominiosAbierto()).toBe(false);
+    const router = TestBed.inject(Router);
+    await router.navigateByUrl('/dominios/objetos');
+    expect(cmp.dominiosActivo()).toBe(true);
   });
 });

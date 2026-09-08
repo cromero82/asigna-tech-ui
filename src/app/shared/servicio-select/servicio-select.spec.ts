@@ -47,4 +47,29 @@ describe('ServicioSelect', () => {
       }
     ]);
   });
+
+  it('filtra, navega con teclado y limpia al cerrar vacío', () => {
+    const cmp = fixture.componentInstance;
+    const emitidas: unknown[] = [];
+    cmp.seleccion.subscribe((valor) => emitidas.push(valor));
+    fixture.componentRef.setInput('tipoServicioId', 21);
+    fixture.detectChanges();
+    cmp.abrir();
+    expect(cmp.esActiva(21)).toBe(true);
+    cmp.onInput({ target: { value: 'android' } } as unknown as Event);
+    expect(cmp.gruposFiltrados()).toHaveLength(1);
+    cmp.onKeydown(new KeyboardEvent('keydown', { key: 'ArrowDown' }));
+    cmp.onKeydown(new KeyboardEvent('keydown', { key: 'ArrowUp' }));
+    cmp.onKeydown(new KeyboardEvent('keydown', { key: 'Enter' }));
+    expect(emitidas.at(-1)).toEqual(
+      expect.objectContaining({ tipoServicioId: 10, especialidadNombre: 'Android' })
+    );
+    cmp.abrir();
+    cmp.onInput({ target: { value: '' } } as unknown as Event);
+    cmp.onKeydown(new KeyboardEvent('keydown', { key: 'Escape' }));
+    expect(emitidas.at(-1)).toBeNull();
+    cmp.abrir();
+    cmp.onDocumento(new MouseEvent('mousedown'));
+    expect(cmp.abierto()).toBe(false);
+  });
 });

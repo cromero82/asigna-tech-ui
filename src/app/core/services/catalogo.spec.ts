@@ -49,4 +49,40 @@ describe('CatalogoService', () => {
     service.listarTiposTecnico().subscribe();
     http.expectOne(`${environment.apiUrl}/tipos-tecnico`).flush([]);
   });
+
+  it('cubre listados y mutaciones de catálogo', () => {
+    service.listarTiposServicio().subscribe();
+    http.expectOne(`${environment.apiUrl}/tipos-servicio`).flush([]);
+    service.listarTiposServicio(1).subscribe();
+    http.expectOne(`${environment.apiUrl}/tipos-servicio?tipoTecnicoId=1`).flush([]);
+    service.listarTecnicos().subscribe();
+    http.expectOne(`${environment.apiUrl}/tecnicos`).flush([]);
+    service.listarObjetos().subscribe();
+    http.expectOne(`${environment.apiUrl}/objetos`).flush([]);
+    service.listarEstados().subscribe();
+    http.expectOne(`${environment.apiUrl}/estados-solicitud`).flush([]);
+    service.listarPrioridades().subscribe();
+    http.expectOne(`${environment.apiUrl}/prioridades`).flush([]);
+    service.listarResultados().subscribe();
+    http.expectOne(`${environment.apiUrl}/resultados-solicitud`).flush([]);
+
+    service.crearTipoTecnico('Redes').subscribe();
+    http.expectOne(`${environment.apiUrl}/tipos-tecnico`).flush({ id: 1, nombre: 'Redes' });
+    service.crearTipoServicio({ nombre: 'Cableado', tipoTecnicoId: 1 }).subscribe();
+    http.expectOne(`${environment.apiUrl}/tipos-servicio`).flush({});
+    service.actualizarTipoServicio(2, { nombre: 'Cableado', tipoTecnicoId: 1 }).subscribe();
+    http.expectOne(`${environment.apiUrl}/tipos-servicio/2`).flush({});
+    service.eliminarTipoServicio(2).subscribe();
+    http.expectOne(`${environment.apiUrl}/tipos-servicio/2`).flush(null);
+    service.crearTecnico({ nombre: 'Ana', tipoTecnicoId: 1 }).subscribe();
+    http.expectOne(`${environment.apiUrl}/tecnicos`).flush({});
+    service.actualizarTecnico(3, { nombre: 'Ana', tipoTecnicoId: 1 }).subscribe();
+    http.expectOne(`${environment.apiUrl}/tecnicos/3`).flush({});
+    service.eliminarTecnico(3).subscribe();
+    http.expectOne(`${environment.apiUrl}/tecnicos/3`).flush(null);
+    service.actualizarObjeto(9, 'Monitor IPS').subscribe();
+    http.expectOne(`${environment.apiUrl}/objetos/9`).flush({ id: 9, nombre: 'Monitor IPS' });
+    service.eliminarObjeto(9).subscribe();
+    http.expectOne(`${environment.apiUrl}/objetos/9`).flush(null);
+  });
 });
