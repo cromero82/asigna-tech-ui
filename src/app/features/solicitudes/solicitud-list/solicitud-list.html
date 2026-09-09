@@ -1,0 +1,100 @@
+<section class="page">
+  <div class="page-head">
+    <h1>Solicitudes</h1>
+    <a class="btn btn-primary" routerLink="/solicitudes/nueva">Nueva solicitud</a>
+  </div>
+
+  @if (error()) {
+    <p class="alert" role="alert">{{ error() }}</p>
+  }
+
+  <div class="filtros">
+    <label>
+      Buscar
+      <input
+        type="search"
+        [value]="busqueda()"
+        (input)="busqueda.set($any($event.target).value)"
+        placeholder="Título, servicio, técnico…"
+      />
+    </label>
+    <label>
+      Estado
+      <select [value]="estadoFiltro() ?? ''" (change)="onEstado($event)">
+        <option value="">Todos</option>
+        @for (item of estados(); track item.id) {
+          <option [value]="item.id">{{ item.nombre }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      Especialidad
+      <select [value]="especialidadFiltro() ?? ''" (change)="onEspecialidad($event)">
+        <option value="">Todas</option>
+        @for (item of especialidades(); track item.id) {
+          <option [value]="item.id">{{ item.nombre }}</option>
+        }
+      </select>
+    </label>
+    @if (hayFiltros()) {
+      <button type="button" class="btn-link limpiar" (click)="limpiarFiltros()">Limpiar filtros</button>
+    }
+  </div>
+
+  @if (solicitudes().length === 0 && !error()) {
+    <p class="empty">No hay solicitudes activas.</p>
+  } @else if (filtradas().length === 0 && solicitudes().length > 0) {
+    <p class="empty">Ninguna solicitud coincide con los filtros.</p>
+  } @else if (filtradas().length > 0) {
+    <table>
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Tipo requerido</th>
+          <th>Servicio</th>
+          <th>Técnico</th>
+          <th>Objeto</th>
+          <th>Estado</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of filtradas(); track item.id) {
+          <tr>
+            <td>{{ item.titulo }}</td>
+            <td>{{ item.tipoTecnico.nombre }}</td>
+            <td>{{ item.tipoServicio.nombre }}</td>
+            <td>{{ item.tecnico?.nombre ?? 'Sin asignar' }}</td>
+            <td>{{ item.objeto?.nombre ?? 'Sin objeto' }}</td>
+            <td>{{ item.estado.nombre }}</td>
+            <td class="actions">
+              <a [routerLink]="['/solicitudes', item.id, 'editar']">Editar</a>
+              <button type="button" class="link-danger" (click)="pedirEliminar(item)">Eliminar</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</section>
+
+<router-outlet />
+
+@for (key of formKeys(); track key) {
+  <app-modal-shell (cerrar)="cerrarFormulario()">
+    <app-solicitud-form
+      [modoModal]="true"
+      [solicitudId]="formId()"
+      (cerrado)="onFormCerrado($event)"
+    />
+  </app-modal-shell>
+}
+
+@if (pendienteEliminar(); as solicitud) {
+  <app-confirm-dialog
+    titulo="Eliminar solicitud"
+    [mensaje]="mensajeEliminar(solicitud)"
+    (confirmado)="confirmarEliminar()"
+    (cancelado)="pendienteEliminar.set(null)"
+  />
+}
